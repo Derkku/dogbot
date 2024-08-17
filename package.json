@@ -1,0 +1,19 @@
+{
+  "name": "submitbot-main",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "audit": "^0.0.6",
+    "colors": "^1.4.0",
+    "cron": "^3.1.7",
+    "fs": "^0.0.1-security",
+    "node-telegram-bot-api": "^0.52.0",
+    "telegram-bot-api": "^2.0.1"
+  }
+}
