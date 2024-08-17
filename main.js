@@ -24,7 +24,7 @@ bot.on("polling_error", console.log);
 const job = new cron.CronJob(
 
     // Set data function, schedule function 2 execute PHOTO GETTER
-    '30 4 * * *',
+    '*/2 * * * *',
     function () {
         // TODO: Set /config command to change this param 
         // @maxFileSend
