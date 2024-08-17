@@ -29,14 +29,14 @@ const job = new cron.CronJob(
         // TODO: Set /config command to change this param 
         // @maxFileSend
         maxFileSend = 3;
-        fs.readdir('./Banned/', (err, files) => {
+        fs.readdir('./banned/', (err, files) => {
             files.forEach((file, index) => {
                 if (index <= maxFileSend) {
-                    var img = fs.ReadStream('./Banned/' + file);
+                    var img = fs.ReadStream('./banned/' + file);
                     bot.sendPhoto('1399835669', img).then((e) => {
                         console.log(e.message_id);
                         bot.copyMessage(config.channel, '1399835669', e.message_id, { caption: 'Good Join' });
-                        fs.renameSync('./Banned/' + file, './Banned/Used' + file);
+                        fs.renameSync('./banned/' + file, './banned/Used' + file);
                     });
                 }
             });
@@ -49,14 +49,14 @@ const job = new cron.CronJob(
 console.log(job);
 
 maxFileSend = 1;
-fs.readdir('./Banned/', (err, files) => {
+fs.readdir('./banned/', (err, files) => {
     files.forEach((file, index) => {
         if (index < maxFileSend) {
-            var img = fs.ReadStream('./Banned/' + file);
+            var img = fs.ReadStream('./banned/' + file);
             bot.sendPhoto('1399835669', img).then((e) => {
                 console.log(e.message_id);
                 bot.copyMessage(config.channel, '1399835669', e.message_id, { caption: 'Good Join' });
-                fs.renameSync('./Banned/' + file, './Banned/Used/' + file);
+                fs.renameSync('./banned/' + file, './banned/Used/' + file);
             });
         }
     });
@@ -85,9 +85,9 @@ bot.on('message', (msg) => {
     // console.log(msg.photo[msg.photo.length-1]);
     // bot.copyMessage(msg.chat.id, msg.chat.id, msg.message_id)
     // return;
-    // fs.readdir('./Banned/', (err, files) => {
+    // fs.readdir('./banned/', (err, files) => {
     //     files.forEach(file => {
-    //     var img = fs.ReadStream('./Banned/' + file)
+    //     var img = fs.ReadStream('./banned/' + file)
     //     bot.sendPhoto(msg.chat.id, img);
     //       console.log(file);
     //     });
