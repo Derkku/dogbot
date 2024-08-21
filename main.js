@@ -1,7 +1,3 @@
-import * as msal from "@azure/msal-node";
-import { Authority, UserAgentApplication } from "msal"
-import benchmark from "benchmark";
-import fetch from 'node-fetch';
 import TelegramBot from 'node-telegram-bot-api';
 import cron from 'cron';
 import fs from 'fs';
