@@ -1,39 +1,100 @@
-const TelegramBot = require('node-telegram-bot-api');
-const cron = require('cron');
-const fs = require('fs');
-const log = require('./logs.js');
-const replybot = require('./reply.json');
-const config = require('./config.json');
+import * as msal from "@azure/msal-node";
+import { Authority, UserAgentApplication } from "msal"
+import benchmark from "benchmark";
+import fetch from 'node-fetch';
+import TelegramBot from 'node-telegram-bot-api';
+import cron from 'cron';
+import fs from 'fs';
+import replybot from './reply.json' with { type: "json" };
+import config from './config.json' with { type: "json" };
+import axios, { AxiosError } from "axios";
+import { Dropbox } from "dropbox";
 const Database = {};
-const dir = './banned'
-const messageartist = require("./modules/messageartist")
-const messageban = require("./modules/messageban")
-const buttons = require("./modules/buttons")
-if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, {
-        recursive: true
-    });
-}
-const token = config.token;
 
-let bot = new TelegramBot(token, { polling: true });
-log.log(replybot.botstart);
+var dbx = new Dropbox({ accessToken: 'sl.B7YOf4ZOsiArq0ejVPR9uZA4S7hh6qDUEhIU8gCXHEU4Do092s8XAKvroVaU5cLoNFJ0CTz6WT1NoDp6htAezPOV66exIQgAM-M_vbgK8PykoI0fiXpTyychSL6PgFcmJmqjSg4hCNxkbGg' });
+
+const tgToken = config.token;
+
+let bot = new TelegramBot(tgToken, { polling: true });
+// log.log(replybot.botstart);
 
 bot.on("polling_error", console.log);
+
+// axios.post('https://api.dropboxapi.com/2/files/move_v2', )
+
+// dbx.usersGetCurrentAccount()
+//   .then(function(response) {
+//     console.log(response);
+//   })
+//   .catch(function(error) {
+//     console.error(error);
+//   });
+
+var folderDir = '/Test2';
+var chatId = '1399835669';
+
+dbx.filesListFolder({ path: folderDir })
+    .then(function (response) {
+        let maxFileSend = 5;
+        console.log(response.result.entries);
+        response.result.entries.forEach(async (element, index) => {
+            if (index < maxFileSend) {
+                await dbx.filesGetTemporaryLink({
+                    path: element.path_display
+                }).then((r) => {
+                    const fileOptions = {
+                        // Explicitly specify the file name.
+                        filename: 'photoY',
+                        // Explicitly specify the MIME type.
+                        contentType: "application/octet-stream",
+                    };
+                    bot.sendPhoto(chatId, r.result.link, {}, fileOptions).then((e) => {
+                        console.log(e.message_id);
+                        bot.copyMessage(config.channel, chatId, e.message_id, { caption: 'Good Join' });
+                    });
+                });
+
+                // Funcion para mover archivos que ya fueron usados
+
+                await dbx.filesMoveBatchV2({
+                    entries: [{
+                        from_path: element.path_display, to_path: `/Test/${element.name}`
+                    }],
+                    allow_ownership_transfer: true,
+                    autorename: false,
+                })
+                    .then(function (response) {
+                        console.log(response);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        });
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
 
 const job = new cron.CronJob(
 
     // Set data function, schedule function 2 execute PHOTO GETTER
-    '*/2 * * * *',
+    '2 5 * * *',
     function () {
         // TODO: Set /config command to change this param 
         // @maxFileSend
-        maxFileSend = 3;
+        let maxFileSend = 3;
         fs.readdir('./banned/', (err, files) => {
             files.forEach((file, index) => {
                 if (index <= maxFileSend) {
-                    var img = fs.ReadStream('./banned/' + file);
-                    bot.sendPhoto('1399835669', img).then((e) => {
+                    var streamImg = fs.ReadStream('./banned/' + file);
+                    const fileOptions = {
+                        // Explicitly specify the file name.
+                        filename: 'photoY',
+                        // Explicitly specify the MIME type.
+                        contentType: "application/octet-stream",
+                    };
+                    bot.sendPhoto('1399835669', streamImg, {}, fileOptions).then((e) => {
                         console.log(e.message_id);
                         bot.copyMessage(config.channel, '1399835669', e.message_id, { caption: 'Good Join' });
                         fs.renameSync('./banned/' + file, './banned/Used' + file);
@@ -46,21 +107,6 @@ const job = new cron.CronJob(
     true,
     'Portugal'
 )
-console.log(job);
-
-maxFileSend = 1;
-fs.readdir('./banned/', (err, files) => {
-    files.forEach((file, index) => {
-        if (index < maxFileSend) {
-            var img = fs.ReadStream('./banned/' + file);
-            bot.sendPhoto('1399835669', img).then((e) => {
-                console.log(e.message_id);
-                bot.copyMessage(config.channel, '1399835669', e.message_id, { caption: 'Good Join' });
-                fs.renameSync('./banned/' + file, './banned/Used/' + file);
-            });
-        }
-    });
-});
 
 function welcomemsg(chatId, username) {
     bot.sendMessage(chatId, replybot.mainmessage.replace("{name}", username), {
@@ -87,8 +133,8 @@ bot.on('message', (msg) => {
     // return;
     // fs.readdir('./banned/', (err, files) => {
     //     files.forEach(file => {
-    //     var img = fs.ReadStream('./banned/' + file)
-    //     bot.sendPhoto(msg.chat.id, img);
+    //     var streamImg = fs.ReadStream('./banned/' + file)
+    //     bot.sendPhoto(msg.chat.id, streamImg);
     //       console.log(file);
     //     });
     //   });
