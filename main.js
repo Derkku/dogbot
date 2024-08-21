@@ -11,7 +11,7 @@ import axios, { AxiosError } from "axios";
 import { Dropbox } from "dropbox";
 const Database = {};
 
-var dbx = new Dropbox({ accessToken: 'sl.B7YOf4ZOsiArq0ejVPR9uZA4S7hh6qDUEhIU8gCXHEU4Do092s8XAKvroVaU5cLoNFJ0CTz6WT1NoDp6htAezPOV66exIQgAM-M_vbgK8PykoI0fiXpTyychSL6PgFcmJmqjSg4hCNxkbGg' });
+var dbx = new Dropbox({ accessToken: 'sl.B7bIn6xVDzNCB0WcEjrOG0zXFGKk0nz9XBxAMUGg8G0hJ6Ij80IGRqJRkObuk2ahwotTKpicStL9S1OU0OR6QMLTpgPHxu3i517iwT326skmJRkFZD9uq8JDbJ7u3ljm3dINai_OKid5nBI' });
 
 const tgToken = config.token;
 
