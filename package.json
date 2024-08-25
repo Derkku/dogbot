@@ -10,6 +10,8 @@
   "type": "module",
   "license": "ISC",
   "dependencies": {
+    "@azure/identity": "^4.4.1",
+    "@azure/keyvault-secrets": "^4.8.0",
     "audit": "^0.0.6",
     "axios": "^1.7.4",
     "benchmark": "^2.1.4",
