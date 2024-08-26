@@ -30,7 +30,7 @@ async function starting() {
     // var resultAzSecret = await client.getSecret(secretKey);
     var resultAzRefreshTk = process.env.REFRESHTOKEN;
     var resultAzClientID = process.env.SECRETTOKEN;
-    var resultAzSecret = aprocess.env.CLIENTID;
+    var resultAzSecret = process.env.CLIENTID;
     
     // Start with our save refresh token, for exhance to access token
     refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk.value}&client_id=${resultAzClientID.value}&client_secret=${resultAzSecret.value}`;
