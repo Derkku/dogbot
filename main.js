@@ -24,6 +24,9 @@ var fonder2Move = '/NoPorn_USED';
 var mainFolder = '/NoPorn';
 var chatId = '1399835669';
 
+console.log(process.env);
+
+
 async function starting() {
     // var resultAzRefreshTk = await client.getSecret(refreshKey);
     // var resultAzClientID = await client.getSecret(clientID);
@@ -33,7 +36,7 @@ async function starting() {
     var resultAzSecret = process.env.CLIENTID;
     
     // Start with our save refresh token, for exhance to access token
-    refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk.value}&client_id=${resultAzClientID.value}&client_secret=${resultAzSecret.value}`;
+    refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk}&client_id=${resultAzClientID}&client_secret=${resultAzSecret}`;
     var dbxToken = await axios.post(refreshUrl)
         .then((res) => {
             return res.data.access_token;

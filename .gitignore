@@ -5,3 +5,5 @@ config.json/
 .netlify
 
 netlify/*
+
+.env
