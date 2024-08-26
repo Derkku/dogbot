@@ -36,7 +36,8 @@ async function starting() {
 
     var resultAzRefreshTk = process.env.REFRESHTOKEN;
     var resultAzClientID = process.env.CLIENTID;
-    var resultAzSecret = process.env.SECRETTOKEN 
+    var resultAzSecret = process.env.SECRETTOKEN;
+    var tgToken = process.env.TGTOKEN;
 
     // Start with our save refresh token, for exhance to access token
     refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk}&client_id=${resultAzClientID}&client_secret=${resultAzSecret}`;
@@ -46,54 +47,55 @@ async function starting() {
         });
     // Bring Oauth2 token access point to dropbox
     var dbx = new Dropbox({ accessToken: dbxToken });
-    const tgToken = config.token;
     let bot = new TelegramBot(tgToken, { polling: true });
     bot.on("polling_error", console.log);
 
-    await dbx.filesListFolder({ path: mainFolder })
-        .then(function (response) {
-            let maxFileSend = 3;
-            response.result.entries.forEach(async (element, index) => {
-                if (index < maxFileSend) {
-                    await dbx.filesGetTemporaryLink({
-                        path: element.path_display
-                    }).then((r) => {
-                        bot.sendMediaGroup(chatId, [{
-                            media: r.result.link, type: "photo",
-                        }]).then((e) => {
-                            bot.copyMessage(config.channel, chatId, e[0].message_id, {
-                                caption: 'Look those views! 👀',
-                                disable_notification: true
-                            });
-                        });
-                    });
+    // Automatic Flow
 
-                    // Funcion para mover archivos que ya fueron usados
-                    await dbx.filesMoveBatchV2({
-                        entries: [{
-                            from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
-                        }],
-                        allow_ownership_transfer: true,
-                        autorename: false,
-                    })
-                        .then(function (response) {
-                            console.log(response);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                }
-            });
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
+    // await dbx.filesListFolder({ path: mainFolder })
+    //     .then(function (response) {
+    //         let maxFileSend = 3;
+    //         response.result.entries.forEach(async (element, index) => {
+    //             if (index < maxFileSend) {
+    //                 await dbx.filesGetTemporaryLink({
+    //                     path: element.path_display
+    //                 }).then((r) => {
+    //                     bot.sendMediaGroup(chatId, [{
+    //                         media: r.result.link, type: "photo",
+    //                     }]).then((e) => {
+    //                         bot.copyMessage(config.channel, chatId, e[0].message_id, {
+    //                             caption: 'Look those views! 👀',
+    //                             disable_notification: true
+    //                         });
+    //                     });
+    //                 });
+
+    //                 // Funcion para mover archivos que ya fueron usados
+    //                 await dbx.filesMoveBatchV2({
+    //                     entries: [{
+    //                         from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
+    //                     }],
+    //                     allow_ownership_transfer: true,
+    //                     autorename: false,
+    //                 })
+    //                     .then(function (response) {
+    //                         console.log(response);
+    //                     })
+    //                     .catch(function (error) {
+    //                         console.log(error);
+    //                     });
+    //             }
+    //         });
+    //     })
+    //     .catch(function (error) {
+    //         console.error(error);
+    //     });
 
     //Set schedulle to send Messages
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '57 2 * * *',
+        '00 12 * * *',
         async function () {
             // TODO: Set /config command to change this param 
             // @maxFileSend
