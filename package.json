@@ -20,6 +20,7 @@
     "cron": "^3.1.7",
     "dropbox": "^10.34.0",
     "fs": "^0.0.1-security",
+    "netlify": "^13.1.21",
     "node-fetch": "^3.3.2",
     "node-telegram-bot-api": "^0.52.0",
     "telegram-bot-api": "^2.0.1"
