@@ -8,6 +8,12 @@
   resources: "SMALL"
   cpu: "ARM"
   actions:
+  - action: "az login"
+    type: "AZURE_CLI"
+    integration: "localtest_sp_rbac"
+    execute_commands:
+    - "az login"
+    shell: "BASH"
   - action: "npm start"
     type: "BUILD"
     docker_image_name: "library/node"
