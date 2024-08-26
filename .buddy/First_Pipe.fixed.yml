@@ -1,0 +1,25 @@
+- pipeline: "First_Pipe"
+  on: "SCHEDULE"
+  refs:
+  - "refs/heads/main"
+  start_date: "2024-08-26T00:03:00Z"
+  delay: 5
+  fail_on_prepare_env_warning: true
+  resources: "SMALL"
+  cpu: "ARM"
+  actions:
+  - action: "az login"
+    type: "AZURE_CLI"
+    integration: "localtest_sp_rbac"
+    execute_commands:
+    - "az login"
+    shell: "BASH"
+  - action: "npm start"
+    type: "BUILD"
+    docker_image_name: "library/node"
+    docker_image_tag: "20"
+    execute_commands:
+    - "# yarn install"
+    - "npm install"
+    - "npm start"
+    shell: "BASH"
