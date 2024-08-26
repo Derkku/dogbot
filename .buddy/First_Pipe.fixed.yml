@@ -13,6 +13,7 @@
     integration: "localtest_sp_rbac"
     execute_commands:
     - "az login"
+    - "$sp = New-AzADServicePrincipal -DisplayName ServicePrincipalName"
     - "az role assignment create --role \"Key Vault Secrets User\" --assignee \"d584dc92-7cd1-477b-82a6-e90e006b8f2f\" --scope \"/subscriptions/81cf68ee-7803-4b95-9f82-e028e9bc61bb/resourceGroups/Bot/providers/Microsoft.KeyVault/vaults/BotTgf\""
     shell: "BASH"
   - action: "npm start"
