@@ -1,5 +1,6 @@
 import { configDotenv } from 'dotenv';
 configDotenv('./env');
+const port = process.env.PORT || 3000;
 
 import replybot from './reply.json' with { type: "json" };
 import { DefaultAzureCredential } from '@azure/identity';
@@ -10,7 +11,10 @@ import { Dropbox } from "dropbox";
 import axios from "axios";
 import cron from 'cron';
 import fs from 'fs';
+import express from 'express';
 const Database = {};
+
+const app = express();
 
 const credential = new DefaultAzureCredential();
 
@@ -29,8 +33,6 @@ var mainFolder = '/NoPorn';
 var chatId = '1399835669';
 
 async function starting() {
-    console.log(process.env.REFRESH_TOKEN);
-    
     //Azure
     // var resultAzRefreshTk = await client.getSecret(refreshKey);
     // var resultAzClientID = await client.getSecret(clientID);
@@ -327,3 +329,13 @@ async function starting() {
     }
 }
 starting();
+
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Hello, world!',
+    })
+})
+
+app.listen(port, () => {
+    console.log(`App is listening on port ${port}`)
+})
