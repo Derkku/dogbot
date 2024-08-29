@@ -1,3 +1,6 @@
+import { configDotenv } from 'dotenv';
+configDotenv('./env');
+
 import replybot from './reply.json' with { type: "json" };
 import { DefaultAzureCredential } from '@azure/identity';
 import config from './config.json' with { type: "json" };
@@ -7,17 +10,14 @@ import { Dropbox } from "dropbox";
 import axios from "axios";
 import cron from 'cron';
 import fs from 'fs';
-import { configDotenv } from 'dotenv';
-
 const Database = {};
-
-configDotenv('./env');
 
 const credential = new DefaultAzureCredential();
 
 const vaultName = "BotTgf";
 
 const vaultUrl = `https://${vaultName}.vault.azure.net`;
+// Azure client (for local purposes only)
 const client = new SecretClient(vaultUrl, credential);
 const refreshKey = 'REFRESHTOKEN';
 const secretKey = 'SECRETTOKEN';
@@ -29,15 +29,17 @@ var mainFolder = '/NoPorn';
 var chatId = '1399835669';
 
 async function starting() {
+    console.log(process.env.REFRESH_TOKEN);
+    
     //Azure
     // var resultAzRefreshTk = await client.getSecret(refreshKey);
     // var resultAzClientID = await client.getSecret(clientID);
     // var resultAzSecret = await client.getSecret(secretKey);
 
-    var resultAzRefreshTk = process.env.REFRESHTOKEN;
-    var resultAzClientID = process.env.CLIENTID;
-    var resultAzSecret = process.env.SECRETTOKEN;
-    var tgToken = process.env.TGTOKEN;
+    var resultAzRefreshTk = process.env.REFRESH_TOKEN;
+    var resultAzClientID = process.env.CLIENT_ID;
+    var resultAzSecret = process.env.SECRET_TOKEN;
+    var tgToken = process.env.TG_TOKEN;
 
     // Start with our save refresh token, for exhance to access token
     refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk}&client_id=${resultAzClientID}&client_secret=${resultAzSecret}`;
