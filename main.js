@@ -96,9 +96,9 @@ async function starting() {
 
     //Set schedulle to send Messages
 
-    new cron.CronJob(
+    let crons = new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '52 03 * * *',
+        '35 04 * * *',
         async function () {
             // TODO: Set /config command to change this param 
             // @maxFileSend
@@ -144,7 +144,10 @@ async function starting() {
         null,
         true,
         'Portugal'
-    )
+    );
+
+    console.log(crons);
+    
 
     // Admin tools (Bot Params)
     bot.on('message', (msg) => {
