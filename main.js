@@ -1,6 +1,6 @@
 import { configDotenv } from 'dotenv';
 configDotenv('./env');
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 8000;
 
 import replybot from './reply.json' with { type: "json" };
 import { DefaultAzureCredential } from '@azure/identity';
@@ -55,50 +55,50 @@ async function starting() {
     bot.on("polling_error", console.log);
 
     // Automatic Flow
-    // await dbx.filesListFolder({ path: mainFolder })
-    //     .then(function (response) {
-    //         let maxFileSend = 3;
-    //         response.result.entries.forEach(async (element, index) => {
-    //             if (index < maxFileSend) {
-    //                 await dbx.filesGetTemporaryLink({
-    //                     path: element.path_display
-    //                 }).then((r) => {
-    //                     bot.sendMediaGroup(chatId, [{
-    //                         media: r.result.link, type: "photo",
-    //                     }]).then((e) => {
-    //                         bot.copyMessage(config.channel, chatId, e[0].message_id, {
-    //                             caption: 'Look those views! 👀',
-    //                             disable_notification: true
-    //                         });
-    //                     });
-    //                 });
+    await dbx.filesListFolder({ path: mainFolder })
+        .then(function (response) {
+            let maxFileSend = 1;
+            response.result.entries.forEach(async (element, index) => {
+                if (index < maxFileSend) {
+                    await dbx.filesGetTemporaryLink({
+                        path: element.path_display
+                    }).then((r) => {
+                        bot.sendMediaGroup(chatId, [{
+                            media: r.result.link, type: "photo",
+                        }]).then((e) => {
+                            bot.copyMessage(config.channel, chatId, e[0].message_id, {
+                                caption: 'Look those views! 👀',
+                                disable_notification: true
+                            });
+                        });
+                    });
 
-    //                 // Funcion para mover archivos que ya fueron usados
-    //                 await dbx.filesMoveBatchV2({
-    //                     entries: [{
-    //                         from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
-    //                     }],
-    //                     allow_ownership_transfer: true,
-    //                     autorename: false,
-    //                 })
-    //                     .then(function (response) {
-    //                         console.log(response);
-    //                     })
-    //                     .catch(function (error) {
-    //                         console.log(error);
-    //                     });
-    //             }
-    //         });
-    //     })
-    //     .catch(function (error) {
-    //         console.error(error);
-    //     });
+                    // Funcion para mover archivos que ya fueron usados
+                    await dbx.filesMoveBatchV2({
+                        entries: [{
+                            from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
+                        }],
+                        allow_ownership_transfer: true,
+                        autorename: false,
+                    })
+                        .then(function (response) {
+                            console.log(response);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 
     //Set schedulle to send Messages
 
     let crons = new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '45 04 * * *',
+        '00 06 * * *',
         async function () {
             // TODO: Set /config command to change this param 
             // @maxFileSend
@@ -146,7 +146,7 @@ async function starting() {
         'Portugal'
     );
 
-    console.log(crons);
+    // console.log(crons);
     
 
     // Admin tools (Bot Params)
@@ -334,7 +334,7 @@ starting();
 
 app.get('/', (req, res) => {
     res.json({
-        message: 'Hello, world!',
+        message: 'Hello, Dog 🐕!',
     })
 })
 
