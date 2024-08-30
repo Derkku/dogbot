@@ -98,7 +98,7 @@ async function starting() {
 
     let crons = new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '35 04 * * *',
+        '45 04 * * *',
         async function () {
             // TODO: Set /config command to change this param 
             // @maxFileSend
