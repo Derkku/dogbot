@@ -1,6 +1,6 @@
 import { configDotenv } from 'dotenv';
 configDotenv('./env');
-const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3000;
 
 import replybot from './reply.json' with { type: "json" };
 import { DefaultAzureCredential } from '@azure/identity';
@@ -55,7 +55,6 @@ async function starting() {
     bot.on("polling_error", console.log);
 
     // Automatic Flow
-
     // await dbx.filesListFolder({ path: mainFolder })
     //     .then(function (response) {
     //         let maxFileSend = 3;
@@ -99,7 +98,7 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '00 12 * * *',
+        '52 03 * * *',
         async function () {
             // TODO: Set /config command to change this param 
             // @maxFileSend
