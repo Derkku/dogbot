@@ -1,6 +1,6 @@
 import { configDotenv } from 'dotenv';
 configDotenv('./env');
-    const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8000;
 
 import replybot from './reply.json' with { type: "json" };
 import { DefaultAzureCredential } from '@azure/identity';
@@ -43,63 +43,63 @@ async function starting() {
     var resultAzSecret = process.env.SECRET_TOKEN;
     var tgToken = process.env.TG_TOKEN;
 
-    // Start with our save refresh token, for exhance to access token
-    refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk}&client_id=${resultAzClientID}&client_secret=${resultAzSecret}`;
-    var dbxToken = await axios.post(refreshUrl)
-        .then((res) => {
-            return res.data.access_token;
-        });
-    // Bring Oauth2 token access point to dropbox
-    var dbx = new Dropbox({ accessToken: dbxToken });
-    let bot = new TelegramBot(tgToken, { polling: true });
-    bot.on("polling_error", console.log);
-
     // Automatic Flow
-    await dbx.filesListFolder({ path: mainFolder })
-        .then(function (response) {
-            let maxFileSend = 1;
-            response.result.entries.forEach(async (element, index) => {
-                if (index < maxFileSend) {
-                    await dbx.filesGetTemporaryLink({
-                        path: element.path_display
-                    }).then((r) => {
-                        bot.sendMediaGroup(chatId, [{
-                            media: r.result.link, type: "photo",
-                        }]).then((e) => {
-                            bot.copyMessage(config.channel, chatId, e[0].message_id, {
-                                caption: 'Look those views! 👀',
-                                disable_notification: true
-                            });
-                        });
-                    });
+    // await dbx.filesListFolder({ path: mainFolder })
+    //     .then(function (response) {
+    //         let maxFileSend = 1;
+    //         response.result.entries.forEach(async (element, index) => {
+    //             if (index < maxFileSend) {
+    //                 await dbx.filesGetTemporaryLink({
+    //                     path: element.path_display
+    //                 }).then((r) => {
+    //                     bot.sendMediaGroup(chatId, [{
+    //                         media: r.result.link, type: "photo",
+    //                     }]).then((e) => {
+    //                         bot.copyMessage(config.channel, chatId, e[0].message_id, {
+    //                             caption: 'Look those views! 👀',
+    //                             disable_notification: true
+    //                         });
+    //                     });
+    //                 });
 
-                    // Funcion para mover archivos que ya fueron usados
-                    await dbx.filesMoveBatchV2({
-                        entries: [{
-                            from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
-                        }],
-                        allow_ownership_transfer: true,
-                        autorename: false,
-                    })
-                        .then(function (response) {
-                            console.log(response);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                }
-            });
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
+    //                 // Funcion para mover archivos que ya fueron usados
+    //                 await dbx.filesMoveBatchV2({
+    //                     entries: [{
+    //                         from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
+    //                     }],
+    //                     allow_ownership_transfer: true,
+    //                     autorename: false,
+    //                 })
+    //                     .then(function (response) {
+    //                         console.log(response);
+    //                     })
+    //                     .catch(function (error) {
+    //                         console.log(error);
+    //                     });
+    //             }
+    //         });
+    //     })
+    //     .catch(function (error) {
+    //         console.error(error);
+    //     });
 
     //Set schedulle to send Messages
 
-    let crons = new cron.CronJob(
+    new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '00 06 * * *',
+        '17 06 * * *',
         async function () {
+
+            // Start with our save refresh token, for exhance to access token
+            refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk}&client_id=${resultAzClientID}&client_secret=${resultAzSecret}`;
+            var dbxToken = await axios.post(refreshUrl)
+                .then((res) => {
+                    return res.data.access_token;
+                });
+            // Bring Oauth2 token access point to dropbox
+            var dbx = new Dropbox({ accessToken: dbxToken });
+            let bot = new TelegramBot(tgToken, { polling: true });
+            bot.on("polling_error", console.log);
             // TODO: Set /config command to change this param 
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
@@ -145,9 +145,6 @@ async function starting() {
         true,
         'Portugal'
     );
-
-    // console.log(crons);
-    
 
     // Admin tools (Bot Params)
     bot.on('message', (msg) => {
