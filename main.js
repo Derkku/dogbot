@@ -43,6 +43,9 @@ async function starting() {
     var resultAzSecret = process.env.SECRET_TOKEN;
     var tgToken = process.env.TG_TOKEN;
 
+    let bot = new TelegramBot(tgToken, { polling: true });
+    bot.on("polling_error", console.log);
+
     // Automatic Flow
     // await dbx.filesListFolder({ path: mainFolder })
     //     .then(function (response) {
@@ -98,8 +101,6 @@ async function starting() {
                 });
             // Bring Oauth2 token access point to dropbox
             var dbx = new Dropbox({ accessToken: dbxToken });
-            let bot = new TelegramBot(tgToken, { polling: true });
-            bot.on("polling_error", console.log);
             // TODO: Set /config command to change this param 
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
