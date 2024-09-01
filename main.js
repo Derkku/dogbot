@@ -90,7 +90,7 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '00 17 * * *',
+        '32 05 * * *',
         async function () {
 
             // Start with our save refresh token, for exhance to access token
@@ -105,7 +105,7 @@ async function starting() {
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
                 .then(function (response) {
-                    let maxFileSend = 20;
+                    let maxFileSend = 1;
                     response.result.entries.forEach(async (element, index) => {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
