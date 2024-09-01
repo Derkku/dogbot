@@ -90,7 +90,7 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '17 06 * * *',
+        '26 04 * * *',
         async function () {
 
             // Start with our save refresh token, for exhance to access token
