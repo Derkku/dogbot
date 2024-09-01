@@ -30,7 +30,7 @@ const clientID = 'CLIENTID';
 var refreshUrl = 'https://api.dropboxapi.com/oauth2/token';
 var fonder2Move = '/NoPorn_USED';
 var mainFolder = '/NoPorn';
-var chatId = '1399835669';
+var chatId = '-1002117179392';
 
 async function starting() {
     //Azure
@@ -90,7 +90,7 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '26 04 * * *',
+        '00 17 * * *',
         async function () {
 
             // Start with our save refresh token, for exhance to access token
@@ -105,7 +105,7 @@ async function starting() {
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
                 .then(function (response) {
-                    let maxFileSend = 3;
+                    let maxFileSend = 20;
                     response.result.entries.forEach(async (element, index) => {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
@@ -115,7 +115,6 @@ async function starting() {
                                     media: r.result.link, type: "photo",
                                 }]).then((e) => {
                                     bot.copyMessage(config.channel, chatId, e[0].message_id, {
-                                        caption: 'Look those views! 👀',
                                         disable_notification: true
                                     });
                                 });
