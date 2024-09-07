@@ -113,9 +113,8 @@ async function starting() {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
                                 path: element.path_display
-                            }).then((r) => {
-                                console.log("Temporal LINK: ", r.result.link);  
-                                sendMediaGroup(channelId, [{
+                            }).then(async (r) => {
+                                await sendMediaGroup(channelId, [{
                                     media: r.result.link, type: "photo",
                                 }]).then(async (e) => {
                                     await bot.copyMessage(config.channel, channelId, e[0].message_id, {
@@ -127,7 +126,8 @@ async function starting() {
                                         }]
                                     })
                                         .then(function (response) {
-                                            // console.log(response);
+                                        console.log("Temporal LINK: ", r.result.link);  
+                                        // console.log(response);
                                         })
                                         .catch(function (error) {
                                             console.log(`Last error: ${error}`);
