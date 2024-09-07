@@ -113,20 +113,21 @@ async function starting() {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
                                 path: element.path_display
-                            }).then((r) => {
-                                sendMediaGroup(channelId, [{
+                            }).then(async (r) => {
+                                console.log("Temporal LINK: ", r.result.link);  
+                                await bot.sendMediaGroup(channelId, [{
                                     media: r.result.link, type: "photo",
-                                }]).then((e) => {
-                                    bot.copyMessage(config.channel, channelId, e[0].message_id, {
+                                }]).then(async (e) => {
+                                    await bot.copyMessage(config.channel, channelId, e[0].message_id, {
                                         disable_notification: true
                                     });
-                                    dbx.filesDeleteBatch({
+                                    await dbx.filesDeleteBatch({
                                         entries: [{
                                             path: element.path_display
                                         }]
                                     })
                                         .then(function (response) {
-                                            console.log(response);
+                                            // console.log(response);
                                         })
                                         .catch(function (error) {
                                             console.log(`Last error: ${error}`);
