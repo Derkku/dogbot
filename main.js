@@ -93,7 +93,7 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '*/2 * * * *',
+        '*/2  * * * *',
         // '00 17 * * *',
         async function () {
             // Start with our save refresh token, for exhance to access token
@@ -114,10 +114,12 @@ async function starting() {
                             await dbx.filesGetTemporaryLink({
                                 path: element.path_display
                             }).then(async (r) => {
-                                bot.sendMediaGroup(channelId, [{
+                                console.log("Temporal LINK: ", r.result.link);
+                                
+                                await sendMediaGroup(channelId, [{
                                     media: r.result.link, type: "photo",
                                 }]).then(async (e) => {
-                                    bot.copyMessage(config.channel, channelId, e[0].message_id, {
+                                    await bot.copyMessage(config.channel, channelId, e[0].message_id, {
                                         disable_notification: true
                                     });
                                     await dbx.filesDeleteBatch({
@@ -126,10 +128,10 @@ async function starting() {
                                         }]
                                     })
                                         .then(function (response) {
-                                            console.log(response);
+                                            // console.log(response);
                                         })
                                         .catch(function (error) {
-                                            console.log(error);
+                                            console.log(`Last error: ${error}`);
                                         });
                                 });
                                 // Funcion para eliminar archivos que ya fueron usados
