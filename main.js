@@ -108,7 +108,7 @@ async function starting() {
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
                 .then(function (response) {
-                    let maxFileSend = 20;
+                    let maxFileSend = 15;
                     response.result.entries.forEach(async (element, index) => {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
