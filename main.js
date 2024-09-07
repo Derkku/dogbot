@@ -93,7 +93,7 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '*/1 * * * *',
+        '*/2 * * * *',
         // '00 17 * * *',
         async function () {
             // Start with our save refresh token, for exhance to access token
@@ -116,23 +116,23 @@ async function starting() {
                             }).then(async (r) => {
                                 bot.sendMediaGroup(channelId, [{
                                     media: r.result.link, type: "photo",
-                                }]).then((e) => {
+                                }]).then(async (e) => {
                                     bot.copyMessage(config.channel, channelId, e[0].message_id, {
                                         disable_notification: true
                                     });
+                                    await dbx.filesDeleteBatch({
+                                        entries: [{
+                                            path: element.path_display
+                                        }]
+                                    })
+                                        .then(function (response) {
+                                            console.log(response);
+                                        })
+                                        .catch(function (error) {
+                                            console.log(error);
+                                        });
                                 });
                                 // Funcion para eliminar archivos que ya fueron usados
-                                await dbx.filesDeleteBatch({
-                                    entries: [{
-                                        path: element.path_display
-                                    }]
-                                })
-                                    .then(function (response) {
-                                        console.log(response);
-                                    })
-                                    .catch(function (error) {
-                                        console.log(error);
-                                    });
                             });
 
                             // // Funcion para mover archivos que ya fueron usados
