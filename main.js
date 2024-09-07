@@ -93,7 +93,7 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '*/2  * * * *',
+        '*/1  * * * *',
         // '00 17 * * *',
         async function () {
             // Start with our save refresh token, for exhance to access token
@@ -113,10 +113,9 @@ async function starting() {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
                                 path: element.path_display
-                            }).then(async (r) => {
-                                console.log("Temporal LINK: ", r.result.link);
-                                
-                                await sendMediaGroup(channelId, [{
+                            }).then((r) => {
+                                console.log("Temporal LINK: ", r.result.link);  
+                                sendMediaGroup(channelId, [{
                                     media: r.result.link, type: "photo",
                                 }]).then(async (e) => {
                                     await bot.copyMessage(config.channel, channelId, e[0].message_id, {
