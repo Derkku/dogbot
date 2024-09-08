@@ -127,7 +127,7 @@ async function starting() {
                                         }]
                                     })
                                         .then(function (response) {
-                                            // console.log(response);
+                                            // console.log(response );
                                         })
                                         .catch(function (error) {
                                             console.log(`Last error: ${error}`);
