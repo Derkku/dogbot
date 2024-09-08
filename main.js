@@ -31,9 +31,9 @@ var refreshUrl = 'https://api.dropboxapi.com/oauth2/token';
 // var fonder2Move = '/NoPorn_USED';
 var mainFolder = '/NoPorn';
 // Test Channel
-var channelId = '1399835669';
+// var channelId = '1399835669';
 // Fuse Channel
-// var channelId = '-1002117179392';
+var channelId = '-1002117179392';
 
 async function starting() {
     //Azure
@@ -93,8 +93,8 @@ async function starting() {
 
     new cron.CronJob(
         // Set data function, schedule function 2 execute PHOTO GETTER
-        '*/1  * * * *',
-        // '00 17 * * *',
+        // '*/1  * * * *',
+        '00 17 * * *',
         async function () {
             // Start with our save refresh token, for exhance to access token
             refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk}&client_id=${resultAzClientID}&client_secret=${resultAzSecret}`;
