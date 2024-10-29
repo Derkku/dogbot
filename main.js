@@ -1,11 +1,10 @@
 import { configDotenv } from 'dotenv';
+// import mongoose, { model, Schema } from 'mongoose';
 configDotenv('./env');
 const port = process.env.PORT || 8000;
 
 import replybot from './reply.json' with { type: "json" };
-import { DefaultAzureCredential } from '@azure/identity';
 import config from './config.json' with { type: "json" };
-import { SecretClient } from '@azure/keyvault-secrets';
 import TelegramBot from 'node-telegram-bot-api';
 import { Dropbox } from "dropbox";
 import axios from "axios";
@@ -16,43 +15,38 @@ const Database = {};
 
 const app = express();
 
-const credential = new DefaultAzureCredential();
-
-const vaultName = "BotTgf";
-
-const vaultUrl = `https://${vaultName}.vault.azure.net`;
-// Azure client (for local purposes only)
-const client = new SecretClient(vaultUrl, credential);
-const refreshKey = 'REFRESHTOKEN';
-const secretKey = 'SECRETTOKEN';
-const clientID = 'CLIENTID';
-
 var refreshUrl = 'https://api.dropboxapi.com/oauth2/token';
-// var fonder2Move = '/NoPorn_USED';
+// var mainFolder = '/Fox';
 var mainFolder = '/NoPorn';
 // Test Channel
 // var channelId = '1399835669';
 // Fuse Channel
 var channelId = '-1002117179392';
 
-async function starting() {
-    //Azure
-    // var resultAzRefreshTk = await client.getSecret(refreshKey);
-    // var resultAzClientID = await client.getSecret(clientID);
-    // var resultAzSecret = await client.getSecret(secretKey);
+// Connect to DB
+// mongoose.connect('mongodb://atlas-sql-67203479cf9ebd596f4986f2-e2xpj.a.query.mongodb.net/sample_mflix?ssl=true&authSource=admin');
 
-    var resultAzRefreshTk = process.env.REFRESH_TOKEN;
-    var resultAzClientID = process.env.CLIENT_ID;
-    var resultAzSecret = process.env.SECRET_TOKEN;
+async function starting() {
+    // const a = new Schema({
+    //     count_img: Number
+    // });
+    // const b = model('ettelegram', a);
+    // let article = b.findOne({});
+    // console.log(article);
+
+    var envRefreshTk = process.env.REFRESH_TOKEN;
+    var envClientID = process.env.CLIENT_ID;
+    var envSecret = process.env.SECRET_TOKEN;
     var tgToken = process.env.TG_TOKEN;
 
     let bot = new TelegramBot(tgToken, { polling: true });
-    bot.on("polling_error", console.log);
+
+    // var dbx = new Dropbox({ accessToken: envRefreshTk });
 
     // Automatic Flow
     // await dbx.filesListFolder({ path: mainFolder })
     //     .then(function (response) {
-    //         let maxFileSend = 1;
+    //         let maxFileSend = 3;
     //         response.result.entries.forEach(async (element, index) => {
     //             if (index < maxFileSend) {
     //                 await dbx.filesGetTemporaryLink({
@@ -60,44 +54,78 @@ async function starting() {
     //                 }).then((r) => {
     //                     bot.sendMediaGroup(channelId, [{
     //                         media: r.result.link, type: "photo",
-    //                     }]).then((e) => {
+    //                     }]).then(async (e) => {
     //                         bot.copyMessage(config.channel, channelId, e[0].message_id, {
     //                             caption: 'Look those views! 👀',
     //                             disable_notification: true
     //                         });
+    //                         await dbx.filesDeleteV2({path: element.path_display}).then((res) => {
+    //                             console.log("------------------ Start Deleted Img's (Metadata) ------------------");
+    //                             console.log(` | Name 🌄 -> ${JSON.stringify(res.result.metadata.name)}                             |`);
+    //                             console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}                          |`);
+    //                             console.log(` | Low 🗑️ -> ${JSON.stringify(res.result.metadata.id)} 📎                          |`);
+    //                             console.log("------------------ End Deleted Img's (Metadata) --------------------");
+    //                         }).catch((errNo) => {
+    //                             console.log(`There is something wrong: ${errNo}`);
+    //                         });
+    //                         // await dbx.filesDeleteBatch({
+    //                         //     entries: [{
+    //                         //         path: element.path_display
+    //                         //     }]
+    //                         // })
+    //                         //     .then(async function (response) {
+    //                         //         await dbx.filesDeleteBatchCheck({
+    //                         //             async_job_id: response.result.async_job_id
+    //                         //         }).then(async (checkResponse) => {
+    //                         //             if (await checkResponse.result['.tag'] === "complete") {
+    //                         //                 console.log('------------------ Check Starts ✅ ------------------');
+    //                         //                 console.log(`Succeced deleted Images: ${JSON.stringify(checkResponse.result)}`);
+    //                         //                 console.log('------------------ Check Ends ------------------');
+    //                         //             }
+    //                         //             let quouqeFileError = [];
+    //                         //             if (checkResponse.result.entries) {
+    //                         //                 quouqeFileError.push(checkResponse.result.entries);
+    //                         //                 quouqeFileError.forEach((entry) => {
+    //                         //                     dbx.filesDeleteV2(entry).then((res) => {
+    //                         //                         console.log('------------------ Emergency Starts 📢 ------------------');
+    //                         //                         console.log(`Emergency Deleted: ${JSON.stringify(res.result)}`);
+    //                         //                         console.log('------------------ Emergency Ends ------------------');
+    //                         //                     })
+    //                         //                 })
+    //                         //             }
+    //                         //          })
+    //                         //             .catch((checkFail) => {
+    //                         //                 console.log(`Error deleting some images: ${checkFail}`);
+    //                         //                 // element.path_display.forEach(element => {
+
+    //                         //                 // });
+    //                         //                 // dbx.filesDeleteV2({
+    //                         //                 //     path
+    //                         //                 // })
+    //                         //             })
+    //                         //             .finally(async (checkResponse) => { })
+    //                         //     })
+    //                         //     .catch(function (error) {
+    //                         //         console.log(`Last error: ${error}`);
+    //                         //     });
     //                     });
     //                 });
-
-    //                 // Funcion para mover archivos que ya fueron usados
-    //                 await dbx.filesMoveBatchV2({
-    //                     entries: [{
-    //                         from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
-    //                     }],
-    //                     allow_ownership_transfer: true,
-    //                     autorename: false,
-    //                 })
-    //                     .then(function (response) {
-    //                         console.log(response);
-    //                     })
-    //                     .catch(function (error) {
-    //                         console.log(error);
-    //                     });
     //             }
     //         });
     //     })
     //     .catch(function (error) {
-    //         console.error(error);
+    //         console.error(`Technical difficults, please stand by 🐶: ${error}`);
     //     });
 
-    //Set schedulle to send Messages
-
+    //Set schedule to send Messages
     new cron.CronJob(
-        // Set data function, schedule function 2 execute PHOTO GETTER
+        // Set data function, schedule function 2 execute PICTURES GETTER
         // '*/1  * * * *',
         '00 17 * * *',
         async function () {
+            bot.on("polling_error", console.log);
             // Start with our save refresh token, for exhance to access token
-            refreshUrl += `?grant_type=refresh_token&refresh_token=${resultAzRefreshTk}&client_id=${resultAzClientID}&client_secret=${resultAzSecret}`;
+            refreshUrl += `?grant_type=refresh_token&refresh_token=${envRefreshTk}&client_id=${envClientID}&client_secret=${envSecret}`;
             var dbxToken = await axios.post(refreshUrl)
                 .then((res) => {
                     return res.data.access_token;
@@ -114,42 +142,28 @@ async function starting() {
                             await dbx.filesGetTemporaryLink({
                                 path: element.path_display
                             }).then(async (r) => {
-                                console.log("Temporal LINK: ", r.result.link);  
                                 await bot.sendMediaGroup(channelId, [{
                                     media: r.result.link, type: "photo",
                                 }]).then(async (e) => {
                                     await bot.copyMessage(config.channel, channelId, e[0].message_id, {
                                         disable_notification: true
                                     });
-                                    await dbx.filesDeleteBatch({
-                                        entries: [{
+                                    // Funcion para eliminar archivos que ya fueron usados
+                                    await dbx.filesDeleteV2(
+                                        {
                                             path: element.path_display
-                                        }]
-                                    })
-                                        .then(function (response) {
-                                            // console.log(response );
-                                        })
-                                        .catch(function (error) {
-                                            console.log(`Last error: ${error}`);
-                                        });
+                                        }
+                                    ).then((res) => {
+                                        console.log("------------------ Start Deleted Img's (Metadata) ------------------");
+                                        console.log(` | Name 🌄 -> ${JSON.stringify(res.result.metadata.name)}                             |`);
+                                        console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}                          |`);
+                                        console.log(` | Low 🗑️ -> ${JSON.stringify(res.result.metadata.id)} 📎                          |`);
+                                        console.log("------------------ End Deleted Img's (Metadata) --------------------");
+                                    }).catch((errNo) => {
+                                        console.log(`There is something wrong: ${errNo}`);
+                                    });
                                 });
-                                // Funcion para eliminar archivos que ya fueron usados
                             });
-
-                            // // Funcion para mover archivos que ya fueron usados
-                            // await dbx.filesMoveBatchV2({
-                            //     entries: [{
-                            //         from_path: element.path_display, to_path: `${fonder2Move}/${element.name}`
-                            //     }],
-                            //     allow_ownership_transfer: true,
-                            //     autorename: false,
-                            // })
-                            //     .then(function (response) {
-                            //         console.log(response);
-                            //     })
-                            //     .catch(function (error) {
-                            //         console.log(error);
-                            //     });
                         }
                     });
                 })
@@ -347,7 +361,7 @@ starting();
 
 app.get('/', (req, res) => {
     res.json({
-        message: 'Hello, Dog 🐕!',
+        message: 'We are online 🐕!',
     })
 })
 
