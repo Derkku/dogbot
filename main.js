@@ -155,9 +155,9 @@ async function starting() {
                                         }
                                     ).then((res) => {
                                         console.log("------------------ Start Deleted Img's (Metadata) ------------------");
-                                        console.log(` | Name 🌄 -> ${JSON.stringify(res.result.metadata.name)}                      |`);
+                                        console.log(` | Client 💾 -> ${JSON.stringify(res.result.metadata.client_modified)}         |`);
                                         console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}                |`);
-                                        console.log(` | Low 🗑️ -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
+                                        console.log(` | Low 🌄 -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
                                         console.log("------------------ End Deleted Img's (Metadata) --------------------");
                                         if(index >= maxFileSend){
                                             console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${index}! 🌃 --------------------`);
