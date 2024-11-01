@@ -154,13 +154,19 @@ async function starting() {
                                             path: element.path_display
                                         }
                                     ).then((res) => {
+                                        let tdy = new Date();
+                                        const formatter = new tdy.DateTimeFormat('en-US');
+                                        const timeMoment = tdy.toLocaleTimeString();
+                                        const formattedDate = formatter.format(date);
                                         console.log("------------------ Start Deleted Img's (Metadata) ------------------");
                                         console.log(` | Client 💾 -> ${JSON.stringify(res.result.metadata.client_modified)}         |`);
                                         console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}                |`);
                                         console.log(` | Low 🌄 -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
                                         console.log("------------------ End Deleted Img's (Metadata) --------------------");
-                                        if(index >= maxFileSend){
+                                        if(index >= maxFileSend - 1){
                                             console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${index}! 🌃 --------------------`);
+                                            console.log(`------------------ 🏜️ ${formattedDate}: <${timeMoment}/>! 🏞️ --------------------`);
+
                                         }else{
                                             console.log(`------------------ 🗿 Current posted pictures: (${index}) 🎢 --------------------`);
                                         }
