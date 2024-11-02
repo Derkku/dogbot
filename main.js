@@ -157,15 +157,14 @@ async function starting() {
                                         let tdy = new Date();
                                         const formatter = tdy.toLocaleDateString();
                                         const timeMoment = tdy.toLocaleTimeString('en-US');
-                                        console.log("------------------ Start Deleted Img's (Metadata) ------------------");
-                                        console.log(` | Client 💾 -> ${JSON.stringify(res.result.metadata.client_modified)}         |`);
-                                        console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}                |`);
+                                        console.log("----------------- Start Deleted Img's (Metadata) ------------------");
+                                        console.log(` | Cli 💾 -> ${JSON.stringify(res.result.metadata.client_modified)}                               |`);
+                                        console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}               |`);
                                         console.log(` | Low 🌄 -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
-                                        console.log("------------------ End Deleted Img's (Metadata) --------------------");
-                                        if(index >= maxFileSend - 1){
+                                        console.log("----------------- End Deleted Img's (Metadata) --------------------");
+                                        if(index + 1 >= maxFileSend){
                                             console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${index}! 🌃 --------------------`);
                                             console.log(`------------------ 🏜️ ${formatter}: <${timeMoment}/>! 🏞️ --------------------`);
-
                                         }else{
                                             console.log(`------------------ 🗿 Current posted pictures: (${index}) 🎢 --------------------`);
                                         }
