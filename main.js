@@ -162,7 +162,7 @@ async function starting() {
                                         console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}               |`);
                                         console.log(` | Low 🌄 -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
                                         console.log("----------------- End Deleted Img's (Metadata) --------------------");
-                                        if(index + 1 >= maxFileSend){
+                                        if(index >= maxFileSend - 1){
                                             console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${index}! 🌃 --------------------`);
                                             console.log(`------------------ 🏜️ ${formatter}: <${timeMoment}/>! 🏞️ --------------------`);
                                         }else{
