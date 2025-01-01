@@ -184,6 +184,73 @@ async function starting() {
         true,
         'Portugal'
     );
+    //Set schedule to send Messages V2
+    new cron.CronJob(
+        // Set data function, schedule function 2 execute PICTURES GETTER // 5:00AM Portuguese
+        // '*/1  * * * *',
+        '00 05 * * *',
+        async function () {
+            bot.on("polling_error", console.log);
+            // Start with our save refresh token, for exhance to access token
+            refreshUrl += `?grant_type=refresh_token&refresh_token=${envRefreshTk}&client_id=${envClientID}&client_secret=${envSecret}`;
+            var dbxToken = await axios.post(refreshUrl)
+                .then((res) => {
+                    return res.data.access_token;
+                });
+            // Bring Oauth2 token access point to dropbox
+            var dbx = new Dropbox({ accessToken: dbxToken });
+            // TODO: Set /config command to change this param 
+            // @maxFileSend
+            await dbx.filesListFolder({ path: mainFolder })
+                .then(function (response) {
+                    let maxFileSend = 15;
+                    response.result.entries.forEach(async (element, index) => {
+                        if (index < maxFileSend) {
+                            await dbx.filesGetTemporaryLink({
+                                path: element.path_display
+                            }).then(async (r) => {
+                                await bot.sendMediaGroup(channelId, [{
+                                    media: r.result.link, type: "photo",
+                                }]).then(async (e) => {
+                                    await bot.copyMessage(config.channel, channelId, e[0].message_id, {
+                                        disable_notification: true
+                                    });
+                                    // Funcion para eliminar archivos que ya fueron usados
+                                    await dbx.filesDeleteV2(
+                                        {
+                                            path: element.path_display
+                                        }
+                                    ).then((res) => {
+                                        let tdy = new Date();
+                                        const formatter = tdy.toLocaleDateString();
+                                        const timeMoment = tdy.toLocaleTimeString('en-US');
+                                        console.log("----------------- Start Deleted Img's (Metadata) ------------------");
+                                        console.log(` | Cli 💾 -> ${JSON.stringify(res.result.metadata.client_modified)}                               |`);
+                                        console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}               |`);
+                                        console.log(` | Low 🌄 -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
+                                        console.log("----------------- End Deleted Img's (Metadata) --------------------");
+                                        if(index >= maxFileSend - 1){
+                                            console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${index}! 🌃 --------------------`);
+                                            console.log(`------------------ 🏜️ ${formatter}: <${timeMoment}/>! 🏞️ --------------------`);
+                                        }else{
+                                            console.log(`------------------ 🗿 Current posted pictures: (${index}) 🎢 --------------------`);
+                                        }
+                                    }).catch((errNo) => {
+                                        console.log(`There is something wrong: ${errNo}`);
+                                    });
+                                });
+                            });
+                        }
+                    });
+                })
+                .catch(function (error) {
+                    console.error(error);
+                });
+        },
+        null,
+        true,
+        'Portugal'
+    );
 
     // Admin tools (Bot Params)
     bot.on('message', (msg) => {
