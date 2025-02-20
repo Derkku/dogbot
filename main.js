@@ -136,7 +136,7 @@ async function starting() {
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
                 .then(function (response) {
-                    let maxFileSend = 10;
+                    let maxFileSend = 20;
                     response.result.entries.forEach(async (element, index) => {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
@@ -203,7 +203,7 @@ async function starting() {
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
                 .then(function (response) {
-                    let maxFileSend = 20;
+                    let maxFileSend = 10;
                     response.result.entries.forEach(async (element, index) => {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
