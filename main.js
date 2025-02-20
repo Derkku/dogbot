@@ -121,7 +121,7 @@ async function starting() {
     new cron.CronJob(
         // Set data function, schedule function 2 execute PICTURES GETTER
         // '*/1  * * * *',
-        '00 17 * * *',
+        '00 18 * * *',
         async function () {
             bot.on("polling_error", console.log);
             // Start with our save refresh token, for exhance to access token
@@ -188,7 +188,7 @@ async function starting() {
     new cron.CronJob(
         // Set data function, schedule function 2 execute PICTURES GETTER // 5:00AM Portuguese
         // '*/1  * * * *',
-        '00 05 30 * *',
+        '00 05 * * *',
         async function () {
             bot.on("polling_error", console.log);
             // Start with our save refresh token, for exhance to access token
@@ -257,7 +257,7 @@ async function starting() {
             '*/10 * * * *',
             async function () {
                 try {
-                    const response = await axios.get('http://localhost:8000'); // Cambia la URL según sea necesario
+                    const response = await axios.get('https://independent-marlyn-derklabs-153ce34d.koyeb.app/'); // Cambia la URL según sea necesario
                     console.log('Solicitud enviada, respuesta:', response.data);
                 } catch (error) {
                     console.error('Error al enviar la solicitud:', error);
@@ -274,8 +274,8 @@ async function starting() {
         let start = "/help";
         let start2 = "/start";
         if (!msg.text) return;
-        if (msg.text.toString().startsWith('/unban') && msg.chat.id == 431324710) { try { fs.unlinkSync(`./banned/${msg.text.toString().split(' ')[1]}.txt`) } catch (e) { } };
-        if (fs.readdirSync('./banned', { encoding: "utf-8" }).includes(msg.chat.id + '.txt')) return;
+        // if (msg.text.toString().startsWith('/unban') && msg.chat.id == 431324710) { try { fs.unlinkSync(`./banned/${msg.text.toString().split(' ')[1]}.txt`) } catch (e) { } };
+        // if (fs.readdirSync('./banned', { encoding: "utf-8" }).includes(msg.chat.id + '.txt')) return;
         if (msg.text.toString().toLowerCase() == start || msg.text.toString().toLowerCase() == start2) {
             console.log(msg.chat.id)
             welcomemsg(msg.chat.id,
