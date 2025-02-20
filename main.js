@@ -41,19 +41,6 @@ async function starting() {
 
     let bot = new TelegramBot(tgToken, { polling: true });
 
-    // Programar una tarea que se ejecuta cada minuto
-    new cron.CronJob(
-        '*/15 * * * *',
-        async function () {
-            try {
-                const response = await axios.get('http://localhost:8000'); // Cambia la URL según sea necesario
-                console.log('Solicitud enviada, respuesta:', response.data);
-            } catch (error) {
-                console.error('Error al enviar la solicitud:', error);
-            }
-        }
-    );
-
     // var dbx = new Dropbox({ accessToken: envRefreshTk });
 
     // Automatic Flow
@@ -201,7 +188,7 @@ async function starting() {
     new cron.CronJob(
         // Set data function, schedule function 2 execute PICTURES GETTER // 5:00AM Portuguese
         // '*/1  * * * *',
-        '00 05 * * *',
+        '00 05 30 * *',
         async function () {
             bot.on("polling_error", console.log);
             // Start with our save refresh token, for exhance to access token
@@ -216,7 +203,7 @@ async function starting() {
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
                 .then(function (response) {
-                    let maxFileSend = 10;
+                    let maxFileSend = 20;
                     response.result.entries.forEach(async (element, index) => {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
@@ -264,6 +251,22 @@ async function starting() {
         true,
         'Portugal'
     );
+
+        // Programar una tarea que se ejecuta cada minuto
+        new cron.CronJob(
+            '*/10 * * * *',
+            async function () {
+                try {
+                    const response = await axios.get('http://localhost:8000'); // Cambia la URL según sea necesario
+                    console.log('Solicitud enviada, respuesta:', response.data);
+                } catch (error) {
+                    console.error('Error al enviar la solicitud:', error);
+                }
+            },
+            null,
+            true,
+            'Portugal'
+        );
 
     // Admin tools (Bot Params)
     bot.on('message', (msg) => {
