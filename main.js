@@ -41,6 +41,16 @@ async function starting() {
 
     let bot = new TelegramBot(tgToken, { polling: true });
 
+    // Programar una tarea que se ejecuta cada minuto
+    cron.schedule('*/15 * * * *', async () => {
+        try {
+            const response = await axios.get('http://localhost:8000'); // Cambia la URL según sea necesario
+            console.log('Solicitud enviada, respuesta:', response.data);
+        } catch (error) {
+            console.error('Error al enviar la solicitud:', error);
+        }
+    });
+
     // var dbx = new Dropbox({ accessToken: envRefreshTk });
 
     // Automatic Flow
