@@ -121,7 +121,7 @@ async function starting() {
     new cron.CronJob(
         // Set data function, schedule function 2 execute PICTURES GETTER
         // '*/1  * * * *',
-        '00 18 * * *',
+        '00 17 * * *',
         async function () {
             bot.on("polling_error", console.log);
             // Start with our save refresh token, for exhance to access token
@@ -136,7 +136,7 @@ async function starting() {
             // @maxFileSend
             await dbx.filesListFolder({ path: mainFolder })
                 .then(function (response) {
-                    let maxFileSend = 20;
+                    let maxFileSend = 10;
                     response.result.entries.forEach(async (element, index) => {
                         if (index < maxFileSend) {
                             await dbx.filesGetTemporaryLink({
