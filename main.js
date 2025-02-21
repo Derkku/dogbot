@@ -121,7 +121,7 @@ async function starting() {
     new cron.CronJob(
         // Set data function, schedule function 2 execute PICTURES GETTER
         // '*/1  * * * *',
-        '00 17 * * *',
+        '00 17 * * *', 
         async function () {
             bot.on("polling_error", console.log);
             // Start with our save refresh token, for exhance to access token
