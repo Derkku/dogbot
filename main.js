@@ -17,7 +17,7 @@ const app = express();
 
 var refreshUrl = 'https://api.dropboxapi.com/oauth2/token';
 // var mainFolder = '/Fox';
-var mainFolder = '/NoPorn';
+var mainFolder = '/noPorn';
 // Test Channel
 // var channelId = '1399835669';
 // Fuse Channel
@@ -118,67 +118,59 @@ async function starting() {
     //     });
 
     //Set schedule to send Messages
+    async function processDropboxQueue(dbx, channelId, bot, maxFileSend = 10) {
+        try {
+            const response = await dbx.filesListFolder({ path: mainFolder });
+            // Only process actual files
+            const files = (response.result.entries || []).filter(e => e['.tag'] === 'file');
+            const limit = Math.min(maxFileSend, files.length);
+            for (let i = 0; i < limit; i++) {
+                const element = files[i];
+                try {
+                    const tmp = await dbx.filesGetTemporaryLink({ path: element.path_display });
+                    const sent = await bot.sendMediaGroup(channelId, [{ media: tmp.result.link, type: "photo" }]);
+                    // copy and then delete; do not fire multiple concurrent ops for same item
+                    await bot.copyMessage(config.channel, channelId, sent[0].message_id, { disable_notification: true });
+                    const delRes = await dbx.filesDeleteV2({ path: element.path_display });
+                    let tdy = new Date();
+                    const formatter = tdy.toLocaleDateString();
+                    const timeMoment = tdy.toLocaleTimeString('en-US');
+                    console.log("----------------- Start Deleted Img's (Metadata) ------------------");
+                    console.log(` | Cli 💾 -> ${JSON.stringify(delRes.result.metadata.client_modified)}                               |`);
+                    console.log(`| Path 🛣️ -> ${JSON.stringify(delRes.result.metadata.path_display)}               |`);
+                    console.log(` | Low 🌄 -> ${JSON.stringify(delRes.result.metadata.id)} 📎                       |`);
+                    console.log("----------------- End Deleted Img's (Metadata) --------------------");
+                    if (i >= limit - 1) {
+                        console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${i}! 🌃 --------------------`);
+                        console.log(`------------------ 🏜️ ${formatter}: <${timeMoment}/>! 🏞️ --------------------`);
+                    } else {
+                        console.log(`------------------ 🗿 Current posted pictures: (${i}) 🎢 --------------------`);
+                    }
+                } catch (fileErr) {
+                    console.error('Error processing file', element.path_display, fileErr);
+                }
+            }
+        } catch (err) {
+            console.error('Error listing Dropbox folder:', err);
+        }
+    }
+
+    // Register polling_error handler once (outside cron jobs)
+    bot.on("polling_error", console.log);
+
     new cron.CronJob(
         // Set data function, schedule function 2 execute PICTURES GETTER
         // '*/1  * * * *',
         '00 17 * * *', 
         async function () {
-            bot.on("polling_error", console.log);
-            // Start with our save refresh token, for exhance to access token
-            refreshUrl += `?grant_type=refresh_token&refresh_token=${envRefreshTk}&client_id=${envClientID}&client_secret=${envSecret}`;
-            var dbxToken = await axios.post(refreshUrl)
-                .then((res) => {
-                    return res.data.access_token;
-                });
-            // Bring Oauth2 token access point to dropbox
-            var dbx = new Dropbox({ accessToken: dbxToken });
-            // TODO: Set /config command to change this param 
-            // @maxFileSend
-            await dbx.filesListFolder({ path: mainFolder })
-                .then(function (response) {
-                    let maxFileSend = 10;
-                    response.result.entries.forEach(async (element, index) => {
-                        if (index < maxFileSend) {
-                            await dbx.filesGetTemporaryLink({
-                                path: element.path_display
-                            }).then(async (r) => {
-                                await bot.sendMediaGroup(channelId, [{
-                                    media: r.result.link, type: "photo",
-                                }]).then(async (e) => {
-                                    await bot.copyMessage(config.channel, channelId, e[0].message_id, {
-                                        disable_notification: true
-                                    });
-                                    // Funcion para eliminar archivos que ya fueron usados
-                                    await dbx.filesDeleteV2(
-                                        {
-                                            path: element.path_display
-                                        }
-                                    ).then((res) => {
-                                        let tdy = new Date();
-                                        const formatter = tdy.toLocaleDateString();
-                                        const timeMoment = tdy.toLocaleTimeString('en-US');
-                                        console.log("----------------- Start Deleted Img's (Metadata) ------------------");
-                                        console.log(` | Cli 💾 -> ${JSON.stringify(res.result.metadata.client_modified)}                               |`);
-                                        console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}               |`);
-                                        console.log(` | Low 🌄 -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
-                                        console.log("----------------- End Deleted Img's (Metadata) --------------------");
-                                        if(index >= maxFileSend - 1){
-                                            console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${index}! 🌃 --------------------`);
-                                            console.log(`------------------ 🏜️ ${formatter}: <${timeMoment}/>! 🏞️ --------------------`);
-                                        }else{
-                                            console.log(`------------------ 🗿 Current posted pictures: (${index}) 🎢 --------------------`);
-                                        }
-                                    }).catch((errNo) => {
-                                        console.log(`There is something wrong: ${errNo}`);
-                                    });
-                                });
-                            });
-                        }
-                    });
-                })
-                .catch(function (error) {
-                    console.error(error);
-                });
+            try {
+                const tokenUrl = `${refreshUrl}?grant_type=refresh_token&refresh_token=${envRefreshTk}&client_id=${envClientID}&client_secret=${envSecret}`;
+                const dbxToken = (await axios.post(tokenUrl)).data.access_token;
+                const dbx = new Dropbox({ accessToken: dbxToken });
+                await processDropboxQueue(dbx, channelId, bot, 10);
+            } catch (e) {
+                console.error('Scheduled job (17:00) failed:', e);
+            }
         },
         null,
         true,
@@ -190,62 +182,14 @@ async function starting() {
         // '*/1  * * * *',
         '00 05 * * *',
         async function () {
-            bot.on("polling_error", console.log);
-            // Start with our save refresh token, for exhance to access token
-            refreshUrl += `?grant_type=refresh_token&refresh_token=${envRefreshTk}&client_id=${envClientID}&client_secret=${envSecret}`;
-            var dbxToken = await axios.post(refreshUrl)
-                .then((res) => {
-                    return res.data.access_token;
-                });
-            // Bring Oauth2 token access point to dropbox
-            var dbx = new Dropbox({ accessToken: dbxToken });
-            // TODO: Set /config command to change this param 
-            // @maxFileSend
-            await dbx.filesListFolder({ path: mainFolder })
-                .then(function (response) {
-                    let maxFileSend = 10;
-                    response.result.entries.forEach(async (element, index) => {
-                        if (index < maxFileSend) {
-                            await dbx.filesGetTemporaryLink({
-                                path: element.path_display
-                            }).then(async (r) => {
-                                await bot.sendMediaGroup(channelId, [{
-                                    media: r.result.link, type: "photo",
-                                }]).then(async (e) => {
-                                    await bot.copyMessage(config.channel, channelId, e[0].message_id, {
-                                        disable_notification: true
-                                    });
-                                    // Funcion para eliminar archivos que ya fueron usados
-                                    await dbx.filesDeleteV2(
-                                        {
-                                            path: element.path_display
-                                        }
-                                    ).then((res) => {
-                                        let tdy = new Date();
-                                        const formatter = tdy.toLocaleDateString();
-                                        const timeMoment = tdy.toLocaleTimeString('en-US');
-                                        console.log("----------------- Start Deleted Img's (Metadata) ------------------");
-                                        console.log(` | Cli 💾 -> ${JSON.stringify(res.result.metadata.client_modified)}                               |`);
-                                        console.log(`| Path 🛣️ -> ${JSON.stringify(res.result.metadata.path_display)}               |`);
-                                        console.log(` | Low 🌄 -> ${JSON.stringify(res.result.metadata.id)} 📎                       |`);
-                                        console.log("----------------- End Deleted Img's (Metadata) --------------------");
-                                        if(index >= maxFileSend - 1){
-                                            console.log(`------------------ 🌃 Tonight bot posted all those pictures -> ${index}! 🌃 --------------------`);
-                                            console.log(`------------------ 🏜️ ${formatter}: <${timeMoment}/>! 🏞️ --------------------`);
-                                        }else{
-                                            console.log(`------------------ 🗿 Current posted pictures: (${index}) 🎢 --------------------`);
-                                        }
-                                    }).catch((errNo) => {
-                                        console.log(`There is something wrong: ${errNo}`);
-                                    });
-                                });
-                            });
-                        }
-                    });
-                })
-                .catch(function (error) {
-                    console.error(error);
-                });
+            try {
+                const tokenUrl = `${refreshUrl}?grant_type=refresh_token&refresh_token=${envRefreshTk}&client_id=${envClientID}&client_secret=${envSecret}`;
+                const dbxToken = (await axios.post(tokenUrl)).data.access_token;
+                const dbx = new Dropbox({ accessToken: dbxToken });
+                await processDropboxQueue(dbx, channelId, bot, 10);
+            } catch (e) {
+                console.error('Scheduled job (05:00) failed:', e);
+            }
         },
         null,
         true,
