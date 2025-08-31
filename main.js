@@ -201,10 +201,10 @@ async function starting() {
             '*/10 * * * *',
             async function () {
                 try {
-                    const response = await axios.get('https://https://gross-shawnee-derklabs-bc7acb20.koyeb.app/'); // Cambia la URL según sea necesario
-                    console.log('Solicitud enviada, respuesta:', response.data);
+                    const response = await axios.get('https://gross-shawnee-derklabs-bc7acb20.koyeb.app/'); // Cambia la URL según sea necesario
+                    console.log('🍃 Solicitud enviada, respuesta:', response.data);
                 } catch (error) {
-                    console.error('Error al enviar la solicitud:', error);
+                    console.error('🍂 Error al enviar la solicitud:', error);
                 }
             },
             null,
