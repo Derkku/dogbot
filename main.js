@@ -124,7 +124,7 @@ async function starting() {
             // Only process actual files
             const files = (response.result.entries || []).filter(e => e['.tag'] === 'file');
             const limit = Math.min(maxFileSend, files.length);
-            for (let i = 0; i < limit; i++) {
+            for (let i = 0; i <= limit; i++) {
                 const element = files[i];
                 try {
                     const tmp = await dbx.filesGetTemporaryLink({ path: element.path_display });
